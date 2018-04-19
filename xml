@@ -1,0 +1,135 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <record model="ir.ui.view" id="dmsapp.vehicletree">
+      <field name="name">dmsapp.vehicle.tree</field>
+      <field name="model">dmsapp.vehicle</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name" />
+          <field name="product_id" />
+          <field name="vehiclename" />
+          <field name="vehiclemake" />
+          <field name="vehiclemodel" />
+          <field name="notes" />
+        </tree>
+      </field>
+    </record>
+    <record model="ir.ui.view" id="dmsapp.saleorder">
+      <field name="name">sale.order.form.dmsapp.inherit</field>
+      <field name="model">sale.order</field>
+      <field name="inherit_id" ref="sale.view_order_form" />
+      <field name="arch" type="xml">
+
+          <field name="vehicle_id" />
+
+      </field>
+    </record>
+    <record model="ir.ui.view" id="dmsapp.vehicleform">
+      <field name="name">dmsapp.vehicle.form</field>
+      <field name="model">dmsapp.vehicle</field>
+      <field name="arch" type="xml">
+        <form>
+          <header>
+            <field name="state" widget="statusbar" />
+            <button type="object" name="perform_inspection" string="Perform Inspect" close="oe_hightlight" />
+          </header>
+          <sheet>
+            <div class="oe_title">
+              <h1>
+                <field name="name" />
+              </h1>
+            </div>
+            <group>
+              <group>
+                <field name="product_id" domain="[('isavehicle','=',True)]" />
+                <field name="modelyear_id" />
+              </group>
+              <group>
+                <field name="vehiclename" />
+                <field name="enginename" />
+                <field name="chasisname" />
+                <field name="inspecteddate" />
+              </group>
+            </group>
+            <notebook>
+              <page string="Vehicle Options">
+                <field name="vehicle_option">
+                  <tree string="Vehicle Options" editable="bottom">
+                    <field name="product_id" domain="[('isaoption','=',True)]" />
+                    <field name="option_price" />
+                  </tree>
+                </field>
+              <group class="oe_subtotal_footer oe_right" colspan="2" name="option_total">
+              <label for="option_total" />
+              <field name="option_total" nolabel="1" />
+            </group>
+              </page>
+            </notebook>
+           
+          </sheet>
+          <div class="oe_chatter">
+            <field name="message_follower_ids" widget="mail_followers" />
+            <field name="message_ids" widget="mail_thread" />
+          </div>
+        </form>
+      </field>
+    </record>
+    <record model="ir.ui.view" id="dmsapp.producttemplateform">
+      <field name="name">product.template.form.dmsapp.inherit</field>
+      <field name="model">product.template</field>
+      <field name="inherit_id" ref="product.product_template_form_view" />
+      <field name="arch" type="xml">
+        <xpath expr="//label[@for='purchase_ok']" position="after">
+          <div>
+            <field name="isavehicle" />
+            <label for="isavehicle" />
+          </div>
+        </xpath>
+        <xpath expr="//label[@for='isavehicle']" position="after">
+          <div>
+            <field name="isaoption" />
+            <label for="isaoption" />
+          </div>
+        </xpath>
+        <xpath expr="//page[@name='notes']" position="before">
+          <page string="Vehicle Information" attrs="{'invisible':[('isavehicle','!=',True)]}">
+            <group>
+              <field name="vehiclemake_id" />
+              <field name="vehiclemodel_id" domain="[('vehiclemake_id','=',vehiclemake_id)]" />
+            </group>
+          </page>
+        </xpath>
+        <xpath expr="//page[@name='notes']" position="after">
+          <page string="Option Information" attrs="{'invisible':[('isaoption','!=',True)]}">
+            <group>
+              <field name="vehiclemake_id" />
+              <field name="vehiclemodel_id" domain="[('vehiclemake_id','=',vehiclemake_id)]" />
+            </group>
+          </page>
+        </xpath>
+      </field>
+    </record>
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="dmsapp.action_window_vehicle">
+      <field name="name">Vehicle</field>
+      <field name="res_model">dmsapp.vehicle</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    <record model="ir.actions.act_window" id="dmsapp.action_window_vehiclemakes">
+      <field name="name">Vehicle Make</field>
+      <field name="res_model">dmsapp.vehiclemake</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    <record model="ir.actions.act_window" id="dmsapp.action_window_vehiclemodels">
+      <field name="name">Vehicle Model</field>
+      <field name="res_model">dmsapp.vehiclemodel</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    <!-- actions -->
+    <menuitem name="Vehicles" id="dmsapp.menu_vehicle" parent="sales_team.menu_sales" action="dmsapp.action_window_vehicle" groups="sales_team.group_sale_manager" />
+    <menuitem name="Vehicle Makes" id="dmsapp.menu_vehiclemakes" parent="sale.prod_config_main" action="dmsapp.action_window_vehiclemakes" />
+    <menuitem name="Vehicle Models" id="dmsapp.menu_vehiclemodels" parent="sale.prod_config_main" action="dmsapp.action_window_vehiclemodels" />
+  </data>
+</odoo>
